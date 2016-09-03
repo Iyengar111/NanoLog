@@ -289,59 +289,68 @@ namespace nanolog
     class RingBuffer
     {
     public:
-    	struct Synch
+    	struct alignas(64) Item
     	{
-    	    std::atomic_flag m_flag = ATOMIC_FLAG_INIT;
-    	    bool written = false;
+	    Item() 
+		: logline(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
+		, written(0)
+		, flag(ATOMIC_FLAG_INIT)
+	    {
+	    }
+
+	    NanoLogLine logline;
+    	    char written;
+    	    std::atomic_flag flag;
+	    char padding[256 - sizeof(std::atomic_flag) - sizeof(char) - sizeof(NanoLogLine)];
     	};
 
     	struct SpinLock
     	{
-    	    SpinLock(Synch & synch) : m_synch(synch)
+    	    SpinLock(std::atomic_flag & flag) : m_flag(flag)
     	    {
-    		while (m_synch.m_flag.test_and_set(std::memory_order_acquire));
+    		while (m_flag.test_and_set(std::memory_order_acquire));
     	    }
 
     	    ~SpinLock()
     	    {
-    		m_synch.m_flag.clear(std::memory_order_release);
+    		m_flag.clear(std::memory_order_release);
     	    }
 
     	private:
-    	    Synch & m_synch;
+	    std::atomic_flag & m_flag;
     	};
 	
     	RingBuffer(size_t const size) 
     	    : m_size(size)
-    	    , m_synch(static_cast<Synch*>(std::malloc(size * sizeof(Synch))))
+    	    , m_ring(static_cast<Item*>(std::malloc(size * sizeof(Item))))
     	    , m_read_index(0)
     	    , m_write_index(0)
     	{
     	    for (size_t i = 0; i < m_size; ++i)
     	    {
-    		new (&m_synch[i]) Synch();
-    		m_ring.emplace_back(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__);
+    		new (&m_ring[i]) Item();
     	    }
+	    static_assert(sizeof(Item) == 256, "Unexpected size != 256");
     	}
 
     	~RingBuffer()
     	{
     	    for (size_t i = 0; i < m_size; ++i)
     	    {
-    		m_synch[i].~Synch();
+    		m_ring[i].~Item();
     	    }
-    	    std::free(m_synch);
+    	    std::free(m_ring);
     	}
 
     	void push(NanoLogLine && logline)
     	{
     	    unsigned int write_index = m_write_index.fetch_add(1, std::memory_order_relaxed) % m_size;
-    	    Synch & synch = m_synch[write_index];
-    	    SpinLock spinlock(synch);
-    	    if (!synch.written)
+    	    Item & item = m_ring[write_index];
+    	    SpinLock spinlock(item.flag);
+    	    if (item.written == 0)
     	    {
-    		m_ring[write_index] = std::move(logline);
-    		synch.written = true;
+    		item.logline = std::move(logline);
+    		item.written = 1;
     		return;
     	    }
     	    // Ring is full. Drop the log line...
@@ -349,12 +358,13 @@ namespace nanolog
 
     	bool try_pop(NanoLogLine & logline)
     	{
-    	    Synch & synch = m_synch[m_read_index];
-    	    SpinLock spinlock(synch);
-    	    if (synch.written)
+    	    Item & item = m_ring[m_read_index % m_size];
+    	    SpinLock spinlock(item.flag);
+    	    if (item.written == 1)
     	    {
-    		logline = std::move(m_ring[m_read_index++]);
-    		synch.written = false;
+    		logline = std::move(item.logline);
+    		item.written = 0;
+		++m_read_index;
     		return true;
     	    }
     	    return false;
@@ -365,10 +375,11 @@ namespace nanolog
 
     private:
     	size_t const m_size;
-    	Synch * m_synch;
+    	Item * m_ring;
+	char pad0[64];
     	unsigned int m_read_index;
+	char pad1[64];
     	std::atomic < unsigned int > m_write_index;
-    	std::vector < NanoLogLine > m_ring;
     };
 
     class FileWriter
@@ -426,7 +437,6 @@ namespace nanolog
 	    , m_ring_buffer(4 * 1024 * 4)
 	    , m_file_writer(log_directory, log_file_name, log_file_roll_size_mb)
 	{
-	   
 	}
 
 	~NanoLogger()
