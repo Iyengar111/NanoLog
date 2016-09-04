@@ -12,13 +12,11 @@ The above copyright notice and this permission notice shall be included in all c
 */
 
 #include "NanoLog.hpp"
-#include <iostream>
 #include <cstring>
 #include <chrono>
 #include <thread>
 #include <tuple>
 #include <atomic>
-#include <vector>
 #include <fstream>
 
 namespace
