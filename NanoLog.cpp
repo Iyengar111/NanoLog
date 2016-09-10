@@ -357,13 +357,8 @@ namespace nanolog
     	    unsigned int write_index = m_write_index.fetch_add(1, std::memory_order_relaxed) % m_size;
     	    Item & item = m_ring[write_index];
     	    SpinLock spinlock(item.flag);
-    	    if (item.written == 0)
-    	    {
-    		item.logline = std::move(logline);
-    		item.written = 1;
-    		return;
-    	    }
-    	    // Ring is full. Drop the log line...
+	    item.logline = std::move(logline);
+	    item.written = 1;
     	}
 
     	bool try_pop(NanoLogLine & logline)
