@@ -10,7 +10,7 @@
 * Minimalistic header includes. Avoids common pattern of header only library. Helps in compilation times of projects.
 
 # Usage
-```
+```c++
 #include "NanoLog.hpp"
 
 int main()
