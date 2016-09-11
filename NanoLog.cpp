@@ -40,6 +40,18 @@ namespace
     	return std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::microseconds(1);
     }
 
+    void format_timestamp(std::ostream & os, uint64_t timestamp)
+    {
+	uint64_t microseconds = timestamp % 1000000;
+	auto duration = std::chrono::microseconds(timestamp);
+	std::chrono::high_resolution_clock::time_point time_point(duration);
+	std::time_t time_t = std::chrono::high_resolution_clock::to_time_t(time_point);
+	auto gmtime = std::gmtime(&time_t);
+	char buffer[32];
+	strftime(buffer, 32, "%Y-%m-%d %H:%M:%S.", gmtime);
+	os << '[' << buffer << microseconds << ']';
+    }
+
     std::thread::id this_thread_id()
     {
 	static thread_local const std::thread::id id = std::this_thread::get_id();
@@ -121,8 +133,9 @@ namespace nanolog
 	uint32_t line = *reinterpret_cast < uint32_t * >(b); b += sizeof(uint32_t);
 	LogLevel loglevel = *reinterpret_cast < LogLevel * >(b); b += sizeof(LogLevel);
 
-	os << '[' << timestamp << ']'
-	   << '[' << to_string(loglevel) << ']'
+	format_timestamp(os, timestamp);
+
+	os << '[' << to_string(loglevel) << ']'
 	   << '[' << threadid << ']'
 	   << '[' << file.m_s << ':' << function.m_s << ':' << line << "] ";
 
