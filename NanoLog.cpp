@@ -302,16 +302,16 @@ namespace nanolog
     	struct alignas(64) Item
     	{
 	    Item() 
-		: logline(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
+		: flag(ATOMIC_FLAG_INIT)
 		, written(0)
-		, flag(ATOMIC_FLAG_INIT)
+		, logline(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
 	    {
 	    }
-
-	    NanoLogLine logline;
-    	    char written;
-    	    std::atomic_flag flag;
+	    
+	    std::atomic_flag flag;
+	    char written;
 	    char padding[256 - sizeof(std::atomic_flag) - sizeof(char) - sizeof(NanoLogLine)];
+	    NanoLogLine logline;
     	};
 
     	struct SpinLock
@@ -333,8 +333,8 @@ namespace nanolog
     	RingBuffer(size_t const size) 
     	    : m_size(size)
     	    , m_ring(static_cast<Item*>(std::malloc(size * sizeof(Item))))
-    	    , m_read_index(0)
     	    , m_write_index(0)
+    	    , m_read_index(0)
     	{
     	    for (size_t i = 0; i < m_size; ++i)
     	    {
@@ -381,10 +381,9 @@ namespace nanolog
     private:
     	size_t const m_size;
     	Item * m_ring;
-	char pad0[64];
-    	unsigned int m_read_index;
-	char pad1[64];
     	std::atomic < unsigned int > m_write_index;
+	char pad[64];
+    	unsigned int m_read_index;
     };
 
     class FileWriter
