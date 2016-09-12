@@ -48,7 +48,7 @@ namespace
 	std::time_t time_t = std::chrono::high_resolution_clock::to_time_t(time_point);
 	auto gmtime = std::gmtime(&time_t);
 	char buffer[32];
-	strftime(buffer, 32, "%Y-%m-%d %H:%M:%S.", gmtime);
+	strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
 	os << '[' << buffer << microseconds << ']';
     }
 
@@ -142,6 +142,9 @@ namespace nanolog
 	stringify(os, b, end);
 
 	os << std::endl;
+
+	if (loglevel >= LogLevel::CRIT)
+	    os.flush();
     }
 
     template < typename Arg >
