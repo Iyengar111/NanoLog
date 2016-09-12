@@ -1,14 +1,16 @@
 # NanoLog
-Low Latency C++11 Logging Library. NanoLog only uses standard C++11 headers so it should work with any C++11 compliant compiler. Supports typical logger features namely multiple log levels, log file rolling and asyncronous writing to file.
+* Low Latency C++11 Logging Library. 
+* NanoLog only uses standard headers so it should work with any C++11 compliant compiler.
+* Supports typical logger features namely multiple log levels, log file rolling and asynchronous writing to file.
 
-# Design higlights
-1. No heap memory allocation for log lines representable in less than ~256 bytes.
-2. No copying of string literals.
-3. Lazy conversion of integers and double to ascii. 
-4. Minimalistic header includes. Avoids common pattern of header only library. Helps in compilation times of projects.
+# Design highlights
+* Zero copying of string literals.
+* Lazy conversion of integers and doubles to ascii. 
+* No heap memory allocation for log lines representable in less than ~256 bytes.
+* Minimalistic header includes. Avoids common pattern of header only library. Helps in compilation times of projects.
 
 # Usage
-```
+```c++
 #include "NanoLog.hpp"
 
 int main()
@@ -22,6 +24,10 @@ int main()
   {
     LOG_INFO << "Sample NanoLog: " << i;
   }
+  
+  // Change log level at run-time.
+  nanolog::set_log_level(nanolog::LogLevel::CRIT);
+  LOG_WARN << "This log line will not be logged since we are at loglevel = CRIT";
   
   return 0;
 }
