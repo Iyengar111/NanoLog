@@ -320,7 +320,7 @@ namespace nanolog
 	    Item() 
 		: flag(ATOMIC_FLAG_INIT)
 		, written(0)
-		, logline(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__)
+		, logline(LogLevel::INFO, __FILE__, __func__, __LINE__)
 	    {
 	    }
 	    

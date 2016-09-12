@@ -133,7 +133,7 @@ namespace nanolog
 
 } // namespace nanolog
 
-#define LOG(LEVEL) nanolog::NanoLog() == nanolog::NanoLogLine(LEVEL, __FILE__, __PRETTY_FUNCTION__, __LINE__)
+#define LOG(LEVEL) nanolog::NanoLog() == nanolog::NanoLogLine(LEVEL, __FILE__, __func__, __LINE__)
 #define LOG_INFO nanolog::is_logged(nanolog::LogLevel::INFO) && LOG(nanolog::LogLevel::INFO)
 #define LOG_WARN nanolog::is_logged(nanolog::LogLevel::WARN) && LOG(nanolog::LogLevel::WARN)
 #define LOG_CRIT nanolog::is_logged(nanolog::LogLevel::CRIT) && LOG(nanolog::LogLevel::CRIT)
