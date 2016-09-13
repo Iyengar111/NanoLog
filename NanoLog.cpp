@@ -320,7 +320,7 @@ namespace nanolog
 	    Item() 
 		: flag(ATOMIC_FLAG_INIT)
 		, written(0)
-		, logline(LogLevel::INFO, __FILE__, __func__, __LINE__)
+		, logline(LogLevel::INFO, nullptr, nullptr, 0)
 	    {
 	    }
 	    
@@ -434,10 +434,12 @@ namespace nanolog
 
 	    m_bytes_written = 0;
 	    m_os.reset(new std::ofstream());
+	    // TODO Optimize this part. Does it even matter ?
 	    std::string log_file_name = m_name;
+	    log_file_name.append(".");
 	    log_file_name.append(std::to_string(++m_file_number));
 	    log_file_name.append(".txt");
-	    m_os->open(log_file_name, std::ofstream::out | std::ofstream::app);
+	    m_os->open(log_file_name, std::ofstream::out | std::ofstream::trunc);
 	}
 
     private:
@@ -451,11 +453,11 @@ namespace nanolog
     class NanoLogger
     {
     public:
-	NanoLogger(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
+	NanoLogger(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb)
 	    : m_disabled(0)
 	    , m_thread(&NanoLogger::pop, this)
-	    , m_ring_buffer(4 * 1024 * 4)
-	    , m_file_writer(log_directory, log_file_name, log_file_roll_size_mb)
+	    , m_ring_buffer(std::max((uint32_t) 1, ring_buffer_size_mb) * 1024 * 4)
+	    , m_file_writer(log_directory, log_file_name, std::max((uint32_t) 1, log_file_roll_size_mb))
 	{
 	}
 
@@ -472,7 +474,7 @@ namespace nanolog
 	
 	void pop()
 	{
-	    NanoLogLine logline(LogLevel::INFO, __FILE__, __FUNCTION__, __LINE__);
+	    NanoLogLine logline(LogLevel::INFO, nullptr, nullptr, 0);
 
 	    while (!m_disabled.load())
 	    {
@@ -504,9 +506,9 @@ namespace nanolog
 	return true;
     }
 
-    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
+    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb)
     {
-	nanologger.reset(new NanoLogger(log_directory, log_file_name, log_file_roll_size_mb));
+	nanologger.reset(new NanoLogger(log_directory, log_file_name, log_file_roll_size_mb, ring_buffer_size_mb));
     }
 
     std::atomic < unsigned int > loglevel = {0};

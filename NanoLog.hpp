@@ -128,8 +128,12 @@ namespace nanolog
      * /tmp/nanolog.1.txt
      * /tmp/nanolog.2.txt
      * etc.
+     * log_file_roll_size_mb - mega bytes after which we roll to next log file.
+     * ring_buffer_size_mb - LogLines are pushed into a mpsc ring buffer whose size
+     * is determined by this parameter. Since each LogLine is 256 bytes, 
+     * ring_buffer_size = ring_buffer_size_mb * 1024 * 1024 / 256
      */
-    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb);
+    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb = 4);
 
 } // namespace nanolog
 
