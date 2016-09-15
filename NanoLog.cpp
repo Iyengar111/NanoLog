@@ -499,16 +499,18 @@ namespace nanolog
     };
 
     std::unique_ptr < NanoLogger > nanologger;
+    std::atomic < NanoLogger * > atomic_nanologger;
 
     bool NanoLog::operator==(NanoLogLine & logline)
     {
-	nanologger->add(std::move(logline));
+	atomic_nanologger.load(std::memory_order_acquire)->add(std::move(logline));
 	return true;
     }
 
     void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb)
     {
 	nanologger.reset(new NanoLogger(log_directory, log_file_name, log_file_roll_size_mb, ring_buffer_size_mb));
+	atomic_nanologger.store(nanologger.get(), std::memory_order_seq_cst);
     }
 
     std::atomic < unsigned int > loglevel = {0};
