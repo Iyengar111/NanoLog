@@ -18,7 +18,11 @@ int main()
   // Ensure initialize is called once prior to logging.
   // This will create log files like /tmp/nanolog1.txt, /tmp/nanolog2.txt etc.
   // Log will roll to the next file after every 1MB.
-  nanolog::initialize("/tmp/", "nanolog", 1);
+  // Optional 4th parameter - ring_buffer_size_in_mb
+  // This is passed as 8 in this example. Each slot in the ring buffer is 256 bytes.
+  // So for 8 mega bytes, the ring buffer has 8 * 1024 * 1024 / 256 slots.
+  // Default value is 4 mega bytes which is approx 16k slots.
+  nanolog::initialize("/tmp/", "nanolog", 1, 8);
   
   for (int i = 0; i < 5; ++i)
   {
@@ -34,3 +38,6 @@ int main()
 ```
 # Latency benchmark
 Coming soon...
+
+# Tips to make it faster!
+* NanoLog uses standard library chrono timestamps. Your platform / os may have non-standard but faster timestamps. Use them!
