@@ -40,7 +40,7 @@ int main()
 # Latency benchmark
 * A google search for fast logger C++ gives the first result [spdlog](https://github.com/gabime/spdlog)
 * So let's benchmark NanoLog vs [spdlog](https://github.com/gabime/spdlog).
-* Take a look at benchmark.cpp for the code used to generate the latency numbers.
+* Take a look at [benchmark.cpp](https://github.com/Iyengar111/NanoLog/blob/master/benchmark.cpp) for the code used to generate the latency numbers.
 * Benchmark was compiled with g++ 4.8.4 running Linux Mint 17 on Intel(R) Core(TM) i7-2630QM CPU @ 2.00GHz
 ```
 Thread count: 1
