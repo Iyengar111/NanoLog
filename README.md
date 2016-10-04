@@ -84,6 +84,8 @@ Thread count: 5
 	Average spdlog Latency = 2663 nanoseconds
 	Average spdlog Latency = 1627 nanoseconds
 ```
+# Crash handling
+* [g3log](https://github.com/KjellKod/g3log) has support for crash handling. I do not see the point in re-inventing the wheel. Have a look at that what's done there and if it works for you, give Kjell credit and use his crash handling code.
 
 # Tips to make it faster!
 * NanoLog uses standard library chrono timestamps. Your platform / os may have non-standard but faster timestamps. Use them!
