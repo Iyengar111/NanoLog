@@ -30,8 +30,15 @@ void run_log_benchmark(Function && f, char const * const logger)
     }
     std::sort(latencies.begin(), latencies.end());
     uint64_t sum = 0; for (auto l : latencies) { sum += l; }
-    printf("%s latency numbers in microseconds\n50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |\n%17ld|%17ld|%17ld|%17ld|%17ld|%17ld|%17lf|\n"
+    printf("%s percentile latency numbers in microseconds\n%9s|%9s|%9s|%9s|%9s|%9s|%9s|\n%9ld|%9ld|%9ld|%9ld|%9ld|%9ld|%9lf|\n"
 	   , logger
+	   , "50th"
+	   , "75th"
+	   , "90th"
+	   , "99th"
+	   , "99.9th"
+	   , "Worst"
+	   , "Average"
 	   , latencies[(size_t)iterations * 0.5]
 	   , latencies[(size_t)iterations * 0.75]
 	   , latencies[(size_t)iterations * 0.9]
