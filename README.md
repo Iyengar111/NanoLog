@@ -12,7 +12,7 @@
 
 # Guaranteed and Non Guaranteed logging
 * Nanolog supports Guaranteed logging i.e. log messages are never dropped even at extreme logging rates.
-* Nanolog also supports Non Guaranteed logging. Uses a ring buffer to hold log lines. When the ring gets full, the previous log line in the slot will be dropped. Does not block producer even if the ring buffer is full.
+* Nanolog also supports Non Guaranteed logging. Uses a ring buffer to hold log lines. In case of extreme logging rate when the ring gets full (i.e. the consumer thread cannot pop items fast enough), the previous log line in the slot will be dropped. Does not block producer even if the ring buffer is full.
 
 # Usage
 ```c++
@@ -47,10 +47,11 @@ int main()
 ```
 # Latency benchmark of Guaranteed logger
 * A google search for fast logger C++ gives the first result [spdlog](https://github.com/gabime/spdlog)
-* Theres another interesting [article](https://kjellkod.wordpress.com/2015/06/30/the-worlds-fastest-logger-vs-g3log/) on worst case latency by the author of [g3log](https://github.com/KjellKod/g3log)
+* There's an interesting [article](https://kjellkod.wordpress.com/2015/06/30/the-worlds-fastest-logger-vs-g3log/) on worst case latency by the author of [g3log](https://github.com/KjellKod/g3log)
 * So let's benchmark NanoLog vs [spdlog](https://github.com/gabime/spdlog) vs [g3log](https://github.com/KjellKod/g3log).
 * Take a look at [nano_vs_spdlog_vs_g3log.cpp](https://github.com/Iyengar111/NanoLog/blob/master/nano_vs_spdlog_vs_g3log.cpp)
 * Benchmark was compiled with g++ 4.8.4 running Linux Mint 17 on Intel(R) Core(TM) i7-2630QM CPU @ 2.00GHz
+* FYI - the "worst" case in nanolog occurs after every 1024 log lines when the logger switches to a new buffer.
 ```
 Thread count: 1
 
