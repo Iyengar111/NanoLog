@@ -54,40 +54,43 @@ int main()
 ```
 Thread count: 1
 
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                0|                1|                2|                6|               70|         0.297110|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                5|               11|               92|         2.735020|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                5|                6|                6|               10|               20|              186|         5.194330|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|        4|        8|       68| 0.347930|
+
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        3|        3|        3|        5|       11|      129| 2.588590|
+
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        5|        6|        6|       10|       19|      186| 5.206230|
+
 
 
 
 Thread count: 2
 
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                1|                2|                5|               94|         0.449340|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                1|                2|                5|               94|         0.455510|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|        2|        5|       55| 0.457240|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|        2|        5|       81| 0.459090|
 
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                2|                2|                2|                4|                6|               24|         1.671900|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                4|                4|               11|               27|         3.025790|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        2|        3|        3|        3|        5|       25| 2.449580|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        2|        3|        3|        3|        6|       21| 2.457150|
 
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                4|                5|                7|               12|               20|               95|         4.599040|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                6|                7|                8|               14|               20|               76|         6.076550|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        5|        6|       12|       18|       64| 4.574850|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        5|        6|       12|       20|       84| 4.586590|
 
 
 
@@ -95,80 +98,80 @@ g3log latency numbers in microseconds
 
 Thread count: 3
 
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                6|               87|         0.574600|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                6|               92|         0.578910|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                6|               93|         0.587460|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|        3|        6|       91| 0.450700|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        7|       90| 0.676050|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        7|      262| 0.680430|
 
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                2|                2|                2|                3|                4|               34|         1.739540|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                4|                8|               34|         2.677610|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                4|               10|              178|         2.710650|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        2|        2|        2|        4|        6|     6729| 1.803570|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        3|        3|        3|        5|        8|       25| 2.679420|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        3|        3|        3|        5|       10|       50| 2.685230|
 
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                4|                4|                6|               18|               28|              104|         4.546910|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                4|                4|                6|               18|               28|              800|         4.569840|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                6|                7|               10|               21|               33|             2294|         7.167530|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        4|        6|       17|       27|       53| 4.385530|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        4|        6|       16|       26|       55| 4.435680|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        8|       19|       29|     1031| 5.896250|
+
 
 
 
 
 Thread count: 4
 
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                7|               48|         0.619480|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                7|               80|         0.644090|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                2|                3|                8|               49|         0.667830|
-nanolog_guaranteed latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                0|                1|                3|                4|                9|               49|         0.892340|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        6|       53| 0.582140|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        7|       70| 0.608980|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        7|       62| 0.803630|
+nanolog_guaranteed percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        2|        3|        7|       61| 0.797270|
 
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                3|                8|              125|         2.691380|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                3|                6|               22|         2.665510|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                3|                8|             4026|         2.726420|
-spdlog latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                3|                3|                3|                6|                9|             4053|         2.754710|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        2|        2|        2|        3|        5|       40| 1.767930|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        2|        2|        2|        3|        6|       21| 1.768640|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        3|        3|        3|        4|        8|       24| 2.676170|
+spdlog percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        3|        3|        3|        5|       10|       31| 2.698580|
 
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                6|                7|                8|               24|               36|             9086|         6.382610|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                6|                7|                8|               23|               35|             2027|         6.430090|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                6|                7|                9|               24|               39|             9047|         6.896570|
-g3log latency numbers in microseconds
-50th percentile  |75th percentile  |90th percentile  |99th percentile  |99.9th percentile|      Worst      |     Average     |
-                7|                7|                9|               25|               41|             9387|         7.291690|
-
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        4|        5|       17|       30|     7766| 4.620760|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        9|       21|       35|     8478| 6.368940|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        8|       22|       32|     1327| 7.023880|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        7|        8|        9|       23|       36|     8470| 7.831750|
 
 ```
 
