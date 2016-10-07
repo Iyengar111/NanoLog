@@ -29,6 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 #include <thread>
 #include <tuple>
 #include <atomic>
+#include <queue>
 #include <fstream>
 
 namespace
@@ -310,9 +311,31 @@ namespace nanolog
 	return *this;
     }
 
+    struct BufferBase
+    {
+	virtual ~BufferBase() = default;
+    	virtual void push(NanoLogLine && logline) = 0;
+	virtual bool try_pop(NanoLogLine & logline) = 0;
+    };
+
+    struct SpinLock
+    {
+	SpinLock(std::atomic_flag & flag) : m_flag(flag)
+	{
+	    while (m_flag.test_and_set(std::memory_order_acquire));
+	}
+
+	~SpinLock()
+	{
+	    m_flag.clear(std::memory_order_release);
+	}
+
+    private:
+	std::atomic_flag & m_flag;
+    };
 
     /* Multi Producer Single Consumer Ring Buffer */
-    class RingBuffer
+    class RingBuffer : public BufferBase
     {
     public:
     	struct alignas(64) Item
@@ -328,22 +351,6 @@ namespace nanolog
 	    char written;
 	    char padding[256 - sizeof(std::atomic_flag) - sizeof(char) - sizeof(NanoLogLine)];
 	    NanoLogLine logline;
-    	};
-
-    	struct SpinLock
-    	{
-    	    SpinLock(std::atomic_flag & flag) : m_flag(flag)
-    	    {
-    		while (m_flag.test_and_set(std::memory_order_acquire));
-    	    }
-
-    	    ~SpinLock()
-    	    {
-    		m_flag.clear(std::memory_order_release);
-    	    }
-
-    	private:
-	    std::atomic_flag & m_flag;
     	};
 	
     	RingBuffer(size_t const size) 
@@ -368,7 +375,7 @@ namespace nanolog
     	    std::free(m_ring);
     	}
 
-    	void push(NanoLogLine && logline)
+    	void push(NanoLogLine && logline) override
     	{
     	    unsigned int write_index = m_write_index.fetch_add(1, std::memory_order_relaxed) % m_size;
     	    Item & item = m_ring[write_index];
@@ -377,7 +384,7 @@ namespace nanolog
 	    item.written = 1;
     	}
 
-    	bool try_pop(NanoLogLine & logline)
+    	bool try_pop(NanoLogLine & logline) override
     	{
     	    Item & item = m_ring[m_read_index % m_size];
     	    SpinLock spinlock(item.flag);
@@ -399,6 +406,146 @@ namespace nanolog
     	Item * m_ring;
     	std::atomic < unsigned int > m_write_index;
 	char pad[64];
+    	unsigned int m_read_index;
+    };
+
+
+    class Buffer
+    {
+    public:
+    	struct Item
+    	{
+	    Item(NanoLogLine && nanologline) : logline(std::move(nanologline)) {}
+	    char padding[256 - sizeof(NanoLogLine)];
+	    NanoLogLine logline;
+    	};
+
+	static constexpr const size_t size = 1024;
+
+    	Buffer() : m_buffer(static_cast<Item*>(std::malloc(size * sizeof(Item))))
+    	{
+    	    for (size_t i = 0; i <= size; ++i)
+    	    {
+    		m_write_state[i].store(0, std::memory_order_relaxed);
+    	    }
+	    static_assert(sizeof(Item) == 256, "Unexpected size != 256");
+    	}
+
+    	~Buffer()
+    	{
+	    unsigned int write_count = m_write_state[size].load();
+    	    for (size_t i = 0; i < write_count; ++i)
+    	    {
+    		m_buffer[i].~Item();
+    	    }
+    	    std::free(m_buffer);
+    	}
+
+	// Returns true if we need to switch to next buffer
+    	bool push(NanoLogLine && logline, unsigned int const write_index)
+    	{
+	    new (&m_buffer[write_index]) Item(std::move(logline));
+	    m_write_state[write_index].store(1, std::memory_order_release);
+	    return m_write_state[size].fetch_add(1, std::memory_order_acquire) + 1 == size;
+    	}
+
+    	bool try_pop(NanoLogLine & logline, unsigned int const read_index)
+    	{
+	    if (m_write_state[read_index].load(std::memory_order_acquire))
+	    {
+		Item & item = m_buffer[read_index];
+		logline = std::move(item.logline);
+		return true;
+	    }
+	    return false;
+    	}
+
+    	Buffer(Buffer const &) = delete;	
+    	Buffer& operator=(Buffer const &) = delete;
+
+    private:
+    	Item * m_buffer;
+	std::atomic < unsigned int > m_write_state[size + 1];
+    };
+
+    class QueueBuffer : public BufferBase
+    {
+    public:
+	QueueBuffer(QueueBuffer const &) = delete;
+	QueueBuffer& operator=(QueueBuffer const &) = delete;
+
+	QueueBuffer() : m_write_index(0)
+		      , m_flag(ATOMIC_FLAG_INIT)
+		      , m_read_index(0)
+	{
+	    setup_next_write_buffer();
+	}
+
+    	void push(NanoLogLine && logline) override
+    	{
+    	    unsigned int write_index = m_write_index.fetch_add(1, std::memory_order_relaxed);
+	    if (write_index < Buffer::size)
+	    {
+		if (m_current_write_buffer.load(std::memory_order_acquire)->push(std::move(logline), write_index))
+		{
+		    setup_next_write_buffer();
+		}
+	    }
+	    else
+	    {
+		while (m_write_index.load(std::memory_order_acquire) >= Buffer::size);
+		push(std::move(logline));
+	    }
+    	}
+
+    	bool try_pop(NanoLogLine & logline) override
+	{
+	    if (m_current_read_buffer == nullptr)
+		m_current_read_buffer = get_next_read_buffer();
+
+	    Buffer * read_buffer = m_current_read_buffer;
+
+	    if (read_buffer == nullptr)
+		return false;
+
+	    if (bool success = read_buffer->try_pop(logline, m_read_index))
+	    {
+		m_read_index++;
+		if (m_read_index == Buffer::size)
+		{
+		    m_read_index = 0;
+		    m_current_read_buffer = nullptr;
+		    SpinLock spinlock(m_flag);
+		    m_buffers.pop();
+		}
+		return true;
+	    }
+
+	    return false;
+	}
+
+    private:
+	void setup_next_write_buffer()
+	{
+	    std::unique_ptr < Buffer > next_write_buffer(new Buffer());
+	    m_current_write_buffer.store(next_write_buffer.get(), std::memory_order_release);
+	    SpinLock spinlock(m_flag);
+	    m_buffers.push(std::move(next_write_buffer));
+	    m_write_index.store(0, std::memory_order_relaxed);
+	}
+	
+	Buffer * get_next_read_buffer()
+	{
+	    SpinLock spinlock(m_flag);
+	    return m_buffers.empty() ? nullptr : m_buffers.front().get();
+	}
+
+    private:
+	std::queue < std::unique_ptr < Buffer > > m_buffers;
+    	std::atomic < Buffer * > m_current_write_buffer;
+	Buffer * m_current_read_buffer;
+    	std::atomic < unsigned int > m_write_index;
+	std::atomic_flag m_flag;
     	unsigned int m_read_index;
     };
 
@@ -453,12 +600,22 @@ namespace nanolog
     class NanoLogger
     {
     public:
-	NanoLogger(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb)
-	    : m_disabled(0)
+	NanoLogger(NonGuaranteedLogger ngl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
+	    : m_disabled(1)
+	    , m_buffer_base(new RingBuffer(std::max(1u, ngl.ring_buffer_size_mb) * 1024 * 4))
+	    , m_file_writer(log_directory, log_file_name, std::max(1u, log_file_roll_size_mb))
 	    , m_thread(&NanoLogger::pop, this)
-	    , m_ring_buffer(std::max((uint32_t) 1, ring_buffer_size_mb) * 1024 * 4)
-	    , m_file_writer(log_directory, log_file_name, std::max((uint32_t) 1, log_file_roll_size_mb))
 	{
+	    m_disabled.store(0, std::memory_order_release);
+	}
+
+	NanoLogger(GuaranteedLogger gl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
+	    : m_disabled(1)
+	    , m_buffer_base(new QueueBuffer())
+	    , m_file_writer(log_directory, log_file_name, std::max(1u, log_file_roll_size_mb))
+	    , m_thread(&NanoLogger::pop, this)
+	{
+	    m_disabled.store(0, std::memory_order_release);
 	}
 
 	~NanoLogger()
@@ -469,23 +626,27 @@ namespace nanolog
 
 	void add(NanoLogLine && logline)
 	{
-	    m_ring_buffer.push(std::move(logline));
+	    m_buffer_base->push(std::move(logline));
 	}
 	
 	void pop()
 	{
+	    // Wait for constructor to complete and pull all stores done there to this thread / core.
+	    while (m_disabled.load(std::memory_order_acquire))
+		std::this_thread::sleep_for(std::chrono::microseconds(50));
+	    
 	    NanoLogLine logline(LogLevel::INFO, nullptr, nullptr, 0);
 
 	    while (!m_disabled.load())
 	    {
-		if (m_ring_buffer.try_pop(logline))
+		if (m_buffer_base->try_pop(logline))
 		    m_file_writer.write(logline);
 		else
 		    std::this_thread::sleep_for(std::chrono::microseconds(50));
 	    }
 	    
 	    // Pop and log all remaining entries
-	    while (m_ring_buffer.try_pop(logline))
+	    while (m_buffer_base->try_pop(logline))
 	    {
 		m_file_writer.write(logline);
 	    }
@@ -493,9 +654,9 @@ namespace nanolog
 	
     private:
 	std::atomic < unsigned int > m_disabled;
-	std::thread m_thread;
-	RingBuffer m_ring_buffer;
+	std::unique_ptr < BufferBase > m_buffer_base;
 	FileWriter m_file_writer;
+	std::thread m_thread;
     };
 
     std::unique_ptr < NanoLogger > nanologger;
@@ -507,9 +668,15 @@ namespace nanolog
 	return true;
     }
 
-    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb)
+    void initialize(NonGuaranteedLogger ngl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
     {
-	nanologger.reset(new NanoLogger(log_directory, log_file_name, log_file_roll_size_mb, ring_buffer_size_mb));
+	nanologger.reset(new NanoLogger(ngl, log_directory, log_file_name, log_file_roll_size_mb));
+	atomic_nanologger.store(nanologger.get(), std::memory_order_seq_cst);
+    }
+
+    void initialize(GuaranteedLogger gl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
+    {
+	nanologger.reset(new NanoLogger(gl, log_directory, log_file_name, log_file_roll_size_mb));
 	atomic_nanologger.store(nanologger.get(), std::memory_order_seq_cst);
     }
 

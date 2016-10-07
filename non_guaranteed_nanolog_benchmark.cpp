@@ -51,7 +51,7 @@ void run_benchmark(Function && f, int thread_count)
 
 int main()
 {
-    nanolog::initialize("/tmp/", "nanolog", 1);
+    nanolog::initialize(nanolog::NonGuaranteedLogger(1), "/tmp/", "nanolog", 1);
     for (auto threads : { 1, 2, 3, 4, 5 })
     	run_benchmark(nanolog_benchmark, threads);
     

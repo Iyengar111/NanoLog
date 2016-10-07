@@ -119,6 +119,28 @@ namespace nanolog
     void set_log_level(LogLevel level);
     
     bool is_logged(LogLevel level);
+
+
+    /*
+     * Non guaranteed logging. Uses a ring buffer to hold log lines.
+     * When the ring gets full, the previous log line in the slot will be dropped.
+     * Does not block producer even if the ring buffer is full.
+     * ring_buffer_size_mb - LogLines are pushed into a mpsc ring buffer whose size
+     * is determined by this parameter. Since each LogLine is 256 bytes, 
+     * ring_buffer_size = ring_buffer_size_mb * 1024 * 1024 / 256
+     */
+    struct NonGuaranteedLogger
+    {
+	NonGuaranteedLogger(uint32_t ring_buffer_size_mb_) : ring_buffer_size_mb(ring_buffer_size_mb_) {}
+	uint32_t ring_buffer_size_mb;
+    };
+
+    /*
+     * Provides a guarantee log lines will not be dropped. 
+     */
+    struct GuaranteedLogger
+    {
+    };
     
     /*
      * Ensure initialize() is called prior to any log statements.
@@ -129,18 +151,16 @@ namespace nanolog
      * /tmp/nanolog.2.txt
      * etc.
      * log_file_roll_size_mb - mega bytes after which we roll to next log file.
-     * ring_buffer_size_mb - LogLines are pushed into a mpsc ring buffer whose size
-     * is determined by this parameter. Since each LogLine is 256 bytes, 
-     * ring_buffer_size = ring_buffer_size_mb * 1024 * 1024 / 256
      */
-    void initialize(std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb, uint32_t ring_buffer_size_mb = 4);
+    void initialize(GuaranteedLogger gl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb);
+    void initialize(NonGuaranteedLogger ngl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb);
 
 } // namespace nanolog
 
-#define LOG(LEVEL) nanolog::NanoLog() == nanolog::NanoLogLine(LEVEL, __FILE__, __func__, __LINE__)
-#define LOG_INFO nanolog::is_logged(nanolog::LogLevel::INFO) && LOG(nanolog::LogLevel::INFO)
-#define LOG_WARN nanolog::is_logged(nanolog::LogLevel::WARN) && LOG(nanolog::LogLevel::WARN)
-#define LOG_CRIT nanolog::is_logged(nanolog::LogLevel::CRIT) && LOG(nanolog::LogLevel::CRIT)
+#define NANO_LOG(LEVEL) nanolog::NanoLog() == nanolog::NanoLogLine(LEVEL, __FILE__, __func__, __LINE__)
+#define LOG_INFO nanolog::is_logged(nanolog::LogLevel::INFO) && NANO_LOG(nanolog::LogLevel::INFO)
+#define LOG_WARN nanolog::is_logged(nanolog::LogLevel::WARN) && NANO_LOG(nanolog::LogLevel::WARN)
+#define LOG_CRIT nanolog::is_logged(nanolog::LogLevel::CRIT) && NANO_LOG(nanolog::LogLevel::CRIT)
 
 #endif /* NANO_LOG_HEADER_GUARD */
 
