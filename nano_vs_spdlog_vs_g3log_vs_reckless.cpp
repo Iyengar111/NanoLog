@@ -66,12 +66,17 @@ void run_benchmark(Function && f, int thread_count, char const * const logger)
     }
 }
 
+void print_usage()
+{
+    char const * const executable = "nano_vs_spdlog_vs_g3log_vs_reckless";
+    printf("Usage \n1. %s nanolog\n2. %s spdlog\n3. %s g3log\n4. %s reckless\n", executable, executable, executable, executable);
+}
 
 int main(int argc, char * argv[])
 {
     if (argc != 2)
     {
-	printf("Usage \n1. nano_vs_spdlog_vs_g3log nanolog\n2. nano_vs_spdlog_vs_g3log spdlog\n3. nano_vs_spdlog_vs_g3log g3log\n4. nano_vs_spdlog_vs_g3log reckless\n");
+	print_usage();
 	return 0;
     }
 
@@ -115,7 +120,7 @@ int main(int argc, char * argv[])
     }
     else
     {
-	printf("Usage \n1. nano_vs_spdlog_vs_g3log nanolog\n2. nano_vs_spdlog_vs_g3log spdlog\n3. nano_vs_spdlog_vs_g3log g3log\n4. nano_vs_spdlog_vs_g3log reckless\n");
+	print_usage();
     }
 
     return 0;
