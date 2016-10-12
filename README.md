@@ -48,8 +48,8 @@ int main()
 # Latency benchmark of Guaranteed logger
 * A google search for fast logger C++ gives the first result [spdlog](https://github.com/gabime/spdlog)
 * There's an interesting [article](https://kjellkod.wordpress.com/2015/06/30/the-worlds-fastest-logger-vs-g3log/) on worst case latency by the author of [g3log](https://github.com/KjellKod/g3log)
-* So let's benchmark NanoLog vs [spdlog](https://github.com/gabime/spdlog) vs [g3log](https://github.com/KjellKod/g3log).
-* Take a look at [nano_vs_spdlog_vs_g3log.cpp](https://github.com/Iyengar111/NanoLog/blob/master/nano_vs_spdlog_vs_g3log.cpp)
+* So let's benchmark NanoLog vs [spdlog](https://github.com/gabime/spdlog) vs [g3log](https://github.com/KjellKod/g3log) vs [reckless](https://github.com/mattiasflodin/reckless).
+* Take a look at [nano_vs_spdlog_vs_g3log_vs_reckless.cpp](https://github.com/Iyengar111/NanoLog/blob/master/nano_vs_spdlog_vs_g3log_vs_reckless.cpp)
 * Benchmark was compiled with g++ 4.8.4 running Linux Mint 17 on Intel(R) Core(TM) i7-2630QM CPU @ 2.00GHz
 * FYI - the "worst" case in nanolog occurs after every 1024 log lines when the logger switches to a new buffer.
 ```
@@ -67,7 +67,9 @@ g3log percentile latency numbers in microseconds
      50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
         5|        6|        6|       10|       19|      186| 5.206230|
 
-
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        0|        1|        1|      175|     1861| 1.829760|
 
 
 Thread count: 2
@@ -93,6 +95,12 @@ g3log percentile latency numbers in microseconds
      50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
         4|        5|        6|       12|       20|       84| 4.586590|
 
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|       11|      417|     1592| 4.412750|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        0|        1|        1|       12|      417|     2138| 4.427810|
 
 
 
@@ -129,7 +137,15 @@ g3log percentile latency numbers in microseconds
      50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
         6|        7|        8|       19|       29|     1031| 5.896250|
 
-
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      298|     1643|     3070|11.208420|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      382|     2266|     3006|12.310360|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      167|     2839|     3249|12.754520|
 
 
 
@@ -173,7 +189,19 @@ g3log percentile latency numbers in microseconds
 g3log percentile latency numbers in microseconds
      50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
         7|        8|        9|       23|       36|     8470| 7.831750|
-
+	
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      506|     3477|     9224|18.959310|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      479|     3636|     8471|19.181160|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      530|     2990|    11658|19.245110|
+reckless percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        1|        1|        1|      436|     3641|     8626|19.342780|
 ```
 
 # Latency benchmark of Non guaranteed logger
