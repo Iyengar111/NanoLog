@@ -38,7 +38,7 @@ namespace
     /* Returns microseconds since epoch */
     uint64_t timestamp_now()
     {
-    	return std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::microseconds(1);
+    	return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     }
 
     /* I want [2016-10-13 00:01:23.528514] */
