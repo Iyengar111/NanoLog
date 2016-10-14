@@ -116,7 +116,7 @@ int main()
 
 
 #### Thread Count 30 
-Picture changes here! There is a interesting case [here](https://github.com/Iyengar111/NanoLog/issues/4). This needs to be solved. Coming soon :)
+* Picture changes here! There is an interesting case [here](https://github.com/Iyengar111/NanoLog/issues/4). This needs to be solved. If you have ideas on how to solve this, please comment there. Coming soon :)
 
 # Latency benchmark of Non guaranteed logger
 * Take a look at [non_guaranteed_nanolog_benchmark.cpp](https://github.com/Iyengar111/NanoLog/blob/master/non_guaranteed_nanolog_benchmark.cpp) for the code used to generate the latency numbers.
