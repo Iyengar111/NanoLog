@@ -53,7 +53,7 @@ int main()
 * Benchmark was compiled with g++ 4.8.4 running Linux Mint 17 on Intel(R) Core(TM) i7-2630QM CPU @ 2.00GHz
 * FYI - the "worst" case in nanolog occurs after every 1024 log lines when the logger switches to a new buffer.
 
-#### Thread Count 1 - percentile latency numbers in microseconds
+#### Thread Count 1 - percentile latency numbers in microseconds (lower number means better performance)
 
 |Logger|     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
 |:-------:|:-------:|:-----:|:----------:|:------:|:------:|:------:|:------:|
@@ -62,7 +62,7 @@ int main()
 |g3log|     5|        6|        6|       10|       19|      186| 5.206230|
 |reckless|  0|        0|        1|        1|      175|     1861| 1.829760|
 
-#### Thread Count 2 - percentile latency numbers in microseconds
+#### Thread Count 2 - percentile latency numbers in microseconds (lower number means better performance)
 
 |Logger|     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
 |:-------:|:-------:|:-----:|:----------:|:------:|:------:|:------:|:------:|
@@ -76,7 +76,7 @@ int main()
 |reckless|        0|        1|        1|       12|      417|     2138| 4.427810|
 
 
-#### Thread Count 3 - percentile latency numbers in microseconds
+#### Thread Count 3 - percentile latency numbers in microseconds (lower number means better performance)
 
 |Logger|     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
 |:-------:|:-------:|:-----:|:----------:|:------:|:------:|:------:|:------:|
@@ -94,7 +94,7 @@ int main()
 |reckless|        1|        1|        1|      167|     2839|     3249|12.754520|
 
 
-#### Thread Count 4 - percentile latency numbers in microseconds
+#### Thread Count 4 - percentile latency numbers in microseconds (lower number means better performance)
 |Logger|     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
 |:-------:|:-------:|:-----:|:----------:|:------:|:------:|:------:|:------:|
 |nanolog_guaranteed|        0|        1|        2|        3|        6|       53| 0.582140|
