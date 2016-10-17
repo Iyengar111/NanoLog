@@ -51,7 +51,7 @@ int main()
 * So let's benchmark NanoLog vs [spdlog](https://github.com/gabime/spdlog) vs [g3log](https://github.com/KjellKod/g3log) vs [reckless](https://github.com/mattiasflodin/reckless).
 * Take a look at [nano_vs_spdlog_vs_g3log_vs_reckless.cpp](https://github.com/Iyengar111/NanoLog/blob/master/nano_vs_spdlog_vs_g3log_vs_reckless.cpp)
 * Benchmark was compiled with g++ 4.8.4 running Linux Mint 17 on Intel(R) Core(TM) i7-2630QM CPU @ 2.00GHz
-* FYI - the "worst" case in nanolog occurs after every 1024 log lines when the logger switches to a new buffer.
+
 
 #### Thread Count 1 - percentile latency numbers in microseconds (lower number means better performance)
 
@@ -115,8 +115,6 @@ int main()
 |reckless|        1|        1|        1|      436|     3641|     8626|19.342780|
 
 
-#### Thread Count 30 
-* Picture changes here! There is an interesting case [here](https://github.com/Iyengar111/NanoLog/issues/4). This needs to be solved. If you have ideas on how to solve this, please comment there. Coming soon :)
 
 # Latency benchmark of Non guaranteed logger
 * Take a look at [non_guaranteed_nanolog_benchmark.cpp](https://github.com/Iyengar111/NanoLog/blob/master/non_guaranteed_nanolog_benchmark.cpp) for the code used to generate the latency numbers.
