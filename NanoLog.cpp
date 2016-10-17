@@ -424,7 +424,7 @@ namespace nanolog
 	    NanoLogLine logline;
     	};
 
-	static constexpr const size_t size = 1024;
+	static constexpr const size_t size = 32768; // 8MB. Helps reduce memory fragmentation
 
     	Buffer() : m_buffer(static_cast<Item*>(std::malloc(size * sizeof(Item))))
     	{
