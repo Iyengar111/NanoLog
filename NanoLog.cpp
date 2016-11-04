@@ -345,7 +345,7 @@ namespace nanolog
     	struct alignas(64) Item
     	{
 	    Item() 
-		: flag(ATOMIC_FLAG_INIT)
+		: flag{ ATOMIC_FLAG_INIT }
 		, written(0)
 		, logline(LogLevel::INFO, nullptr, nullptr, 0)
 	    {
@@ -478,8 +478,9 @@ namespace nanolog
 	QueueBuffer(QueueBuffer const &) = delete;
 	QueueBuffer& operator=(QueueBuffer const &) = delete;
 
-	QueueBuffer() : m_write_index(0)
-		      , m_flag(ATOMIC_FLAG_INIT)
+	QueueBuffer() : m_current_read_buffer{nullptr}
+				, m_write_index(0)
+			  , m_flag{ATOMIC_FLAG_INIT}
 		      , m_read_index(0)
 	{
 	    setup_next_write_buffer();
