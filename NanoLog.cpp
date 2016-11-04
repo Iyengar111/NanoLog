@@ -478,7 +478,8 @@ namespace nanolog
 	QueueBuffer(QueueBuffer const &) = delete;
 	QueueBuffer& operator=(QueueBuffer const &) = delete;
 
-	QueueBuffer() : m_write_index(0)
+	QueueBuffer() : m_current_read_buffer{nullptr}
+				, m_write_index(0)
 			  , m_flag{ATOMIC_FLAG_INIT}
 		      , m_read_index(0)
 	{
