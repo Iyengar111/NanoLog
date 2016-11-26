@@ -26,6 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 #include "NanoLog.hpp"
 #include <cstring>
 #include <chrono>
+#include <ctime>
 #include <thread>
 #include <tuple>
 #include <atomic>
