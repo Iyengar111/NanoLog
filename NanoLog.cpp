@@ -26,6 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 #include "NanoLog.hpp"
 #include <cstring>
 #include <chrono>
+#include <ctime>
 #include <thread>
 #include <tuple>
 #include <atomic>
@@ -38,18 +39,22 @@ namespace
     /* Returns microseconds since epoch */
     uint64_t timestamp_now()
     {
-    	return std::chrono::high_resolution_clock::now().time_since_epoch() / std::chrono::microseconds(1);
+    	return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     }
 
+    /* I want [2016-10-13 00:01:23.528514] */
     void format_timestamp(std::ostream & os, uint64_t timestamp)
     {
-	uint64_t microseconds = timestamp % 1000000;
-	auto duration = std::chrono::microseconds(timestamp);
-	std::chrono::high_resolution_clock::time_point time_point(duration);
-	std::time_t time_t = std::chrono::high_resolution_clock::to_time_t(time_point);
+	// The next 3 lines do not work on MSVC!
+	// auto duration = std::chrono::microseconds(timestamp);
+	// std::chrono::high_resolution_clock::time_point time_point(duration);
+	// std::time_t time_t = std::chrono::high_resolution_clock::to_time_t(time_point);
+	std::time_t time_t = timestamp / 1000000;
 	auto gmtime = std::gmtime(&time_t);
 	char buffer[32];
 	strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
+	char microseconds[7];
+	sprintf(microseconds, "%06lu", timestamp % 1000000);
 	os << '[' << buffer << microseconds << ']';
     }
 
@@ -341,7 +346,7 @@ namespace nanolog
     	struct alignas(64) Item
     	{
 	    Item() 
-		: flag(ATOMIC_FLAG_INIT)
+		: flag{ ATOMIC_FLAG_INIT }
 		, written(0)
 		, logline(LogLevel::INFO, nullptr, nullptr, 0)
 	    {
@@ -420,7 +425,7 @@ namespace nanolog
 	    NanoLogLine logline;
     	};
 
-	static constexpr const size_t size = 1024;
+	static constexpr const size_t size = 32768; // 8MB. Helps reduce memory fragmentation
 
     	Buffer() : m_buffer(static_cast<Item*>(std::malloc(size * sizeof(Item))))
     	{
@@ -474,8 +479,9 @@ namespace nanolog
 	QueueBuffer(QueueBuffer const &) = delete;
 	QueueBuffer& operator=(QueueBuffer const &) = delete;
 
-	QueueBuffer() : m_write_index(0)
-		      , m_flag(ATOMIC_FLAG_INIT)
+	QueueBuffer() : m_current_read_buffer{nullptr}
+				, m_write_index(0)
+			  , m_flag{ATOMIC_FLAG_INIT}
 		      , m_read_index(0)
 	{
 	    setup_next_write_buffer();

@@ -8,6 +8,8 @@
 #include "spdlog/spdlog.h"
 #include "g3log/g3log.hpp"
 #include "g3log/logworker.hpp"
+#include "reckless/severity_log.hpp"
+#include "reckless/file_writer.hpp"
 
 /* Returns microseconds since epoch */
 uint64_t timestamp_now()
@@ -64,12 +66,17 @@ void run_benchmark(Function && f, int thread_count, char const * const logger)
     }
 }
 
+void print_usage()
+{
+    char const * const executable = "nano_vs_spdlog_vs_g3log_vs_reckless";
+    printf("Usage \n1. %s nanolog\n2. %s spdlog\n3. %s g3log\n4. %s reckless\n", executable, executable, executable, executable);
+}
 
 int main(int argc, char * argv[])
 {
     if (argc != 2)
     {
-	printf("Usage \n1. nano_vs_spdlog_vs_g3log nanolog\n2. nano_vs_spdlog_vs_g3log spdlog\n3. nano_vs_spdlog_vs_g3log g3log\n");
+	print_usage();
 	return 0;
     }
 
@@ -101,9 +108,19 @@ int main(int argc, char * argv[])
 	for (auto threads : { 1, 2, 3, 4 })
 	    run_benchmark(g3log_benchmark, threads, "g3log");
     }
+    else if (strcmp(argv[1], "reckless") == 0)
+    {
+	using log_t = reckless::severity_log < reckless::indent < 4 >, ' ', reckless::severity_field, reckless::timestamp_field >;
+	reckless::file_writer writer("/tmp/reckless.txt");
+	log_t g_log(&writer);
+
+	auto reckless_benchmark = [&g_log](int i, char const * const cstr) { g_log.info("Logging %s%d%d%c%lf", cstr, i, 0, 'K', -42.42); };
+	for (auto threads : { 1, 2, 3, 4 })
+	    run_benchmark(reckless_benchmark, threads, "reckless");
+    }
     else
     {
-	printf("Usage \n1. nano_vs_spdlog_vs_g3log nanolog\n2. nano_vs_spdlog_vs_g3log spdlog\n3. nano_vs_spdlog_vs_g3log g3log\n");
+	print_usage();
     }
 
     return 0;
