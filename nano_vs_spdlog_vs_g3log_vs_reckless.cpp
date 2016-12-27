@@ -5,11 +5,8 @@
 #include <algorithm>
 #include <cstring>
 #include "NanoLog.hpp"
-#include "spdlog/spdlog.h"
-#include "g3log/g3log.hpp"
-#include "g3log/logworker.hpp"
-#include "reckless/severity_log.hpp"
-#include "reckless/file_writer.hpp"
+#include <g3log/g3log.hpp>
+#include <g3log/logworker.hpp>
 
 /* Returns microseconds since epoch */
 uint64_t timestamp_now()
@@ -89,15 +86,15 @@ int main(int argc, char * argv[])
 	for (auto threads : { 1, 2, 3, 4 })
 	    run_benchmark(nanolog_benchmark, threads, "nanolog_guaranteed");
     }
-    else if (strcmp(argv[1], "spdlog") == 0)
-    {
-	spdlog::set_async_mode(1048576);
-	auto spd_logger = spdlog::create < spdlog::sinks::simple_file_sink_mt >("file_logger", "/tmp/spd-async.txt", false);
+ //    else if (strcmp(argv[1], "spdlog") == 0)
+ //    {
+	// spdlog::set_async_mode(1048576);
+	// auto spd_logger = spdlog::create < spdlog::sinks::simple_file_sink_mt >("file_logger", "/tmp/spd-async.txt", false);
 
-	auto spdlog_benchmark = [&spd_logger](int i, char const * const cstr) { spd_logger->info("Logging {}{}{}{}{}", cstr, i, 0, 'K', -42.42); };
-	for (auto threads : { 1, 2, 3, 4 })
-	    run_benchmark(spdlog_benchmark, threads, "spdlog");
-    }
+	// auto spdlog_benchmark = [&spd_logger](int i, char const * const cstr) { spd_logger->info("Logging {}{}{}{}{}", cstr, i, 0, 'K', -42.42); };
+	// for (auto threads : { 1, 2, 3, 4 })
+	//     run_benchmark(spdlog_benchmark, threads, "spdlog");
+ //    }
     else if (strcmp(argv[1], "g3log") == 0)
     {
 	auto worker = g3::LogWorker::createLogWorker();
@@ -108,15 +105,15 @@ int main(int argc, char * argv[])
 	for (auto threads : { 1, 2, 3, 4 })
 	    run_benchmark(g3log_benchmark, threads, "g3log");
     }
-    else if (strcmp(argv[1], "reckless") == 0)
+    else if (strcmp(argv[1], "g3logstream") == 0)
     {
-	using log_t = reckless::severity_log < reckless::indent < 4 >, ' ', reckless::severity_field, reckless::timestamp_field >;
-	reckless::file_writer writer("/tmp/reckless.txt");
-	log_t g_log(&writer);
+  auto worker = g3::LogWorker::createLogWorker();
+  auto handle = worker->addDefaultLogger("g3", "/tmp/");
+  g3::initializeLogging(worker.get());
 
-	auto reckless_benchmark = [&g_log](int i, char const * const cstr) { g_log.info("Logging %s%d%d%c%lf", cstr, i, 0, 'K', -42.42); };
-	for (auto threads : { 1, 2, 3, 4 })
-	    run_benchmark(reckless_benchmark, threads, "reckless");
+  auto g3log_benchmark2 = [](int i, char const * const cstr) {  LOG(INFO) << "Logging " << cstr << i << 0 << 'K' << -42.42; };
+  for (auto threads : { 1, 2, 3, 4 })
+      run_benchmark(g3log_benchmark2, threads, "g3log");
     }
     else
     {
