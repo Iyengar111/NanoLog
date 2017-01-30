@@ -54,7 +54,7 @@ namespace
 	char buffer[32];
 	strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
 	char microseconds[7];
-	sprintf(microseconds, "%06lu", timestamp % 1000000);
+	sprintf(microseconds, "%06llu", timestamp % 1000000);
 	os << '[' << buffer << microseconds << ']';
     }
 
@@ -597,7 +597,7 @@ namespace nanolog
 
     private:
 	uint32_t m_file_number = 0;
-	uint32_t m_bytes_written = 0;
+	std::streamoff m_bytes_written = 0;
 	uint32_t const m_log_file_roll_size_bytes;
 	std::string const m_name;
 	std::unique_ptr < std::ofstream > m_os;
