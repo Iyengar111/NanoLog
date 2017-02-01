@@ -101,8 +101,8 @@ namespace nanolog
 	void stringify(std::ostream & os, char * start, char const * const end);
 
     private:
-	uint32_t m_bytes_used;
-	uint32_t m_buffer_size;
+	size_t m_bytes_used;
+	size_t m_buffer_size;
 	std::unique_ptr < char [] > m_heap_buffer;
 	char m_stack_buffer[256 - 2 * sizeof(uint32_t) - sizeof(decltype(m_heap_buffer)) - 8 /* Reserved */];
     };
