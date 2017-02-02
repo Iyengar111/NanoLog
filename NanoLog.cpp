@@ -607,26 +607,26 @@ namespace nanolog
     {
     public:
 	NanoLogger(NonGuaranteedLogger ngl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
-	    : m_disabled(1)
+	    : m_disabled(0)
 	    , m_buffer_base(new RingBuffer(std::max(1u, ngl.ring_buffer_size_mb) * 1024 * 4))
 	    , m_file_writer(log_directory, log_file_name, std::max(1u, log_file_roll_size_mb))
 	    , m_thread(&NanoLogger::pop, this)
 	{
-	    m_disabled.store(0, std::memory_order_release);
+	    m_disabled.store(1, std::memory_order_release);
 	}
 
 	NanoLogger(GuaranteedLogger gl, std::string const & log_directory, std::string const & log_file_name, uint32_t log_file_roll_size_mb)
-	    : m_disabled(1)
+	    : m_disabled(0)
 	    , m_buffer_base(new QueueBuffer())
 	    , m_file_writer(log_directory, log_file_name, std::max(1u, log_file_roll_size_mb))
 	    , m_thread(&NanoLogger::pop, this)
 	{
-	    m_disabled.store(0, std::memory_order_release);
+	    m_disabled.store(1, std::memory_order_release);
 	}
 
 	~NanoLogger()
 	{
-	    m_disabled.store(1);
+	    m_disabled.store(2);
 	    m_thread.join();
 	}
 
@@ -638,12 +638,12 @@ namespace nanolog
 	void pop()
 	{
 	    // Wait for constructor to complete and pull all stores done there to this thread / core.
-	    while (m_disabled.load(std::memory_order_acquire))
+	    while (m_disabled.load(std::memory_order_acquire) == 0)
 		std::this_thread::sleep_for(std::chrono::microseconds(50));
 	    
 	    NanoLogLine logline(LogLevel::INFO, nullptr, nullptr, 0);
 
-	    while (!m_disabled.load())
+	    while (m_disabled.load() == 1)
 	    {
 		if (m_buffer_base->try_pop(logline))
 		    m_file_writer.write(logline);
