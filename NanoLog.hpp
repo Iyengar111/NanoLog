@@ -104,7 +104,7 @@ namespace nanolog
 	size_t m_bytes_used;
 	size_t m_buffer_size;
 	std::unique_ptr < char [] > m_heap_buffer;
-	char m_stack_buffer[256 - 2 * sizeof(uint32_t) - sizeof(decltype(m_heap_buffer)) - 8 /* Reserved */];
+	char m_stack_buffer[256 - 2 * sizeof(size_t) - sizeof(decltype(m_heap_buffer)) - 8 /* Reserved */];
     };
     
     struct NanoLog
