@@ -1,0 +1,38 @@
+
+Thread count: 1
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        5|        6|        7|       10|       17|      108| 5.454710|
+
+Thread count: 2
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        6|        8|       13|       21|     1426| 5.097120|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        6|        8|       14|       23|     3151| 5.159790|
+
+Thread count: 3
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        8|       24|      182|    11362| 7.713370|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        8|       20|      140|    13439| 7.835630|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        6|        7|        9|       27|      250|    12684| 8.245690|
+
+Thread count: 4
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        5|        8|       18|       27|      419| 5.096430|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        6|        7|       18|       27|     1386| 5.202270|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        4|        6|        8|       18|       28|       75| 5.227260|
+g3log percentile latency numbers in microseconds
+     50th|     75th|     90th|     99th|   99.9th|    Worst|  Average|
+        5|        6|        8|       19|       29|      408| 5.492650|
