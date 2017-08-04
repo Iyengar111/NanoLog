@@ -58,7 +58,7 @@ namespace nanolog
 	template < size_t N >
 	NanoLogLine& operator<<(const char (&arg)[N])
 	{
-	    encode(string_literal_t(arg));
+	    encode(arg);
 	    return *this;
 	}
 
