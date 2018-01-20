@@ -89,12 +89,16 @@ namespace nanolog
     {
 	switch (loglevel)
 	{
+	case LogLevel::DEBUG:
+	    return "DEBUG";
 	case LogLevel::INFO:
-	    return "INFO";
+	    return "INFO ";
 	case LogLevel::WARN:
-	    return "WARN";
+	    return "WARN ";
+	case LogLevel::ERROR:
+	    return "ERROR";
 	case LogLevel::CRIT:
-	    return "CRIT";
+	    return "CRIT ";
 	}
 	return "XXXX";
     }
@@ -693,7 +697,7 @@ namespace nanolog
 	atomic_nanologger.store(nanologger.get(), std::memory_order_seq_cst);
     }
 
-    std::atomic < unsigned int > loglevel = {0};
+    std::atomic < unsigned int > loglevel = {1};
 
     void set_log_level(LogLevel level)
     {
