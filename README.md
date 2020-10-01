@@ -1,8 +1,8 @@
-# NanoLog
+# NanoLog ( an amazing project )
 * Low Latency C++11 Logging Library. 
 * It's fast. Very fast. See [Latency benchmark](#latency-benchmark-of-guaranteed-logger)
-* NanoLog only uses standard headers so it should work with any C++11 compliant compiler.
-* Supports typical logger features namely multiple log levels, log file rolling and asynchronous writing to file.
+* NanoLog only uses standard headers ,so it should work with any C++11 compliant compiler.
+* Supports typical logger features namely multiple log levels, log file rolling and asynchronous writing to the  file.
 
 # Design highlights
 * Zero copying of string literals.
