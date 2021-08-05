@@ -54,7 +54,7 @@ namespace
 	char buffer[32];
 	strftime(buffer, 32, "%Y-%m-%d %T.", gmtime);
 	char microseconds[7];
-	sprintf(microseconds, "%06llu", timestamp % 1000000);
+	sprintf(microseconds, "%06lu", timestamp % 1000000);
 	os << '[' << buffer << microseconds << ']';
     }
 
@@ -514,7 +514,7 @@ namespace nanolog
 	    if (read_buffer == nullptr)
 		return false;
 
-	    if (bool success = read_buffer->try_pop(logline, m_read_index))
+	    if (read_buffer->try_pop(logline, m_read_index))
 	    {
 		m_read_index++;
 		if (m_read_index == Buffer::size)
